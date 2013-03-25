@@ -2,16 +2,10 @@
 
 include_recipe "couchdb"
 include_recipe "nodejs"
+include_recipe "nodejs::npm"
 
 package "curl"
-package "npm"
-# package "nodejs"
 package "git"
-
-# HACK: Node isn't called node, but everything expects it to be
-# link "/usr/bin/node" do
-#   to "/usr/bin/nodejs"
-# end
 
 execute "Create registry" do
   command <<-EOF
@@ -27,6 +21,16 @@ execute "Install couchapp and semver" do
   EOF
 end
 
+# TODO: Work out how to do this without it timing out?
+execute "Replicate npm's couchdb" do
+  command <<-EOF
+    curl --request POST --max-time 1 --silent --header "Content-Type:application/json" \
+        http://localhost:#{node.couch_db.config.httpd.port}/_replicate -d \
+        '{"source":"http://isaacs.iriscouch.com/registry/", "target":"registry"}'
+  EOF
+  returns 28
+end
+
 git "/srv/npmjs.org" do
   repository "https://github.com/isaacs/npmjs.org.git"
   enable_submodules true
@@ -38,14 +42,13 @@ execute "Sync the registry and search" do
   couchapp push registry/app.js http://localhost:#{node.couch_db.config.httpd.port}/registry
   couchapp push www/app.js http://localhost:#{node.couch_db.config.httpd.port}/registry
   EOF
-end
-
-# TODO: Work out how to do this without it timing out?
-execute "Replicate npm's couchdb" do
-  command <<-EOF
-    curl -X POST -H "Content-Type:application/json" \
-        http://localhost:#{node.couch_db.config.httpd.port}/_replicate -d \
-        '{"source":"http://isaacs.iriscouch.com/registry/", "target":"registry"}'
-  EOF
+  # HACK: couchapp errors, but pushes successfully
+  # events.js:72
+  #         throw er; // Unhandled 'error' event
+  #               ^
+  # Error: spawn ENOENT
+  #     at errnoException (child_process.js:945:11)
+  #     at Process.ChildProcess._handle.onexit (child_process.js:736:34)
+  returns 8
 end
 

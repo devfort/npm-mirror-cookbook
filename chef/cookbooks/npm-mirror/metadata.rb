@@ -1,4 +1,4 @@
-name              "npm_mirror"
+name              "npm-mirror"
 maintainer        "Steve Marshall"
 maintainer_email  "steve@nascentguruism.com"
 license           "Apache 2.0"
@@ -7,4 +7,4 @@ version           "0.1"
 depends           "couchdb"
 depends           "nodejs"
 
-recipe "npm_mirror", "Configures machine as an NPM mirror"
+recipe "npm-mirror", "Configures machine as an NPM mirror"

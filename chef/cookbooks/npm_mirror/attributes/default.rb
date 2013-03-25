@@ -1,1 +1,0 @@
-override['couch_db']['config']['httpd']['secure_rewrites'] = false
