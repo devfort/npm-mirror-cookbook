@@ -43,7 +43,9 @@ Usage
 
 Include `npm-mirror` and it will install CouchDB and set it replicating http://npmjs.org. This will take a _very_ long time (probably a day or two), and require tens of gigabytes of storage. You have been warned.
 
-To use the npm mirror, add this to your `~/.npmrc` file:
+You can keep an eye on the mirroring progress at `http://YOUR_MIRROR_HOSTNAME:5984/_utils/status.html`. Given the way Couch does replication, if you reload the VM or break the connection, it'll probably go a bit wrong and you'll need to start again. Again: you've been warned.
+
+To use the npm mirror (which you can do even before mirroring is complete), add this to your `~/.npmrc` file:
 
     registry = http://YOUR_MIRROR_HOSTNAME:5984/registry/_design/app/_rewrite
 
