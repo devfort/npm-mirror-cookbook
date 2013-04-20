@@ -55,6 +55,6 @@ Or you can override it per-call:
 
     npm --registry http://localhost:5984/registry/_design/app/_rewrite install <package>
 
-If you've configure vanity URLs (or are using the fort ones, above), you could just add this to your `~/.npmrc`:
+If you've configured vanity URLs (or are using the fort ones, above), you could just add this to your `~/.npmrc`:
 
     registry = http://npm-registry.fort:5984/
