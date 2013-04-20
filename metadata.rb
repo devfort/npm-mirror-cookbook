@@ -7,4 +7,4 @@ version           "0.1"
 depends           "couchdb"
 depends           "nodejs"
 
-recipe "npm-mirror", "Configures machine as an NPM mirror"
+recipe "npm-mirror", "Configures the machine as a mirror of http://npmjs.org/"
