@@ -1,6 +1,19 @@
 # Build a clone of npmjs.org, per https://github.com/isaacs/npmjs.org
 
 include_recipe "couchdb"
+
+# HACK: Force couch to start cleanly
+#       When we first install couch and boot the machine, couch starts in a weird, broken state. Notably, it listens on localhost instead of *. This hack kills it and starts again. There's probably a better way to do this. Also need to look into fixing the goddamn cookbook.
+execute 'Force couch to start cleanly' do
+  # HACK: Assume couch is runnning under beam
+  #       Could be other things running under this, too, but fuck it for now.
+  command "pkill beam"
+end
+
+service "couchdb" do
+  action :start
+end
+
 include_recipe "nodejs"
 include_recipe "nodejs::npm"
 
@@ -36,7 +49,7 @@ git "/srv/npmjs.org" do
   enable_submodules true
 end
 
-execute "Sync the registry and search" do
+execute "Sync the registry-rewriter and search UI" do
   cwd "/srv/npmjs.org"
   command <<-EOF
   couchapp push registry/app.js http://localhost:#{node.couch_db.config.httpd.port}/registry
@@ -51,4 +64,3 @@ execute "Sync the registry and search" do
   #     at Process.ChildProcess._handle.onexit (child_process.js:736:34)
   returns 8
 end
-
