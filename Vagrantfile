@@ -4,6 +4,7 @@
 Vagrant.configure("2") do |config|
   config.vm.hostname = "npm-mirror-berkshelf"
   config.vm.box = "npm-mirror"
+  # TODO: Find a suitable basebox for Vagrant (we need dozens of gigs!)
   # TODO: VM box URL
   # config.vm.box_url = ""
 
