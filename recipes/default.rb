@@ -8,10 +8,8 @@ execute 'Force couch to start cleanly' do
   # HACK: Assume couch is runnning under beam
   #       Could be other things running under this, too, but fuck it for now.
   command "pkill beam"
-end
-
-service "couchdb" do
-  action :start
+  not_if "netstat -lp --inet | grep *:5984"
+  notifies :start, "service[couchdb]", :immediate
 end
 
 include_recipe "nodejs"
