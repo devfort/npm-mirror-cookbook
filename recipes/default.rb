@@ -12,7 +12,14 @@ execute 'Force couch to start cleanly' do
   notifies :start, "service[couchdb]", :immediate
 end
 
+# HACK: Couch isn't ready yet, even though it's 'started'. Sigh.
+#       There's got to be a better way to do this. I wonder if @thommay has any ideas.
+execute "wait for couchdb" do
+  command "sleep 5"
+end
+
 package "curl"
+package "git"
 
 execute "Create registry" do
   command <<-EOF
@@ -20,7 +27,6 @@ execute "Create registry" do
   EOF
 end
 
-# TODO: Work out how to do this without it timing out?
 execute "Replicate npm's couchdb" do
   command <<-EOF
     curl --request POST --max-time 1 --silent --header "Content-Type:application/json" \
@@ -29,36 +35,34 @@ execute "Replicate npm's couchdb" do
   EOF
   returns 28
 end
-# 
-# include_recipe "nodejs"
-# include_recipe "nodejs::npm"
-# package "git"
-# 
-# execute "Install couchapp and semver" do
-#   command <<-EOF
-#   npm install couchapp -g
-#   npm install couchapp
-#   npm install semver
-#   EOF
-# end
-# 
-# git "/srv/npmjs.org" do
-#   repository "https://github.com/isaacs/npmjs.org.git"
-#   enable_submodules true
-# end
-# 
-# execute "Sync the registry-rewriter and search UI" do
-#   cwd "/srv/npmjs.org"
-#   command <<-EOF
-#   couchapp push registry/app.js http://localhost:#{node.couch_db.config.httpd.port}/registry
-#   couchapp push www/app.js http://localhost:#{node.couch_db.config.httpd.port}/registry
-#   EOF
-#   # HACK: couchapp errors, but pushes successfully
-#   # events.js:72
-#   #         throw er; // Unhandled 'error' event
-#   #               ^
-#   # Error: spawn ENOENT
-#   #     at errnoException (child_process.js:945:11)
-#   #     at Process.ChildProcess._handle.onexit (child_process.js:736:34)
-#   returns 8
-# end
+
+include_recipe "nodejs::npm"
+
+execute "Install couchapp and semver" do
+  command <<-EOF
+    npm install couchapp -g
+    npm install couchapp
+    npm install semver
+  EOF
+end
+
+package "git"
+git "/srv/npmjs.org" do
+  repository "https://github.com/isaacs/npmjs.org.git"
+end
+
+execute "Sync the registry-rewriter and search UI" do
+ cwd "/srv/npmjs.org"
+ command <<-EOF
+   couchapp push registry/app.js http://localhost:#{node.couch_db.config.httpd.port}/registry
+   couchapp push www/app.js http://localhost:#{node.couch_db.config.httpd.port}/registry
+ EOF
+ # HACK: couchapp errors, but pushes successfully
+ # events.js:72
+ #         throw er; // Unhandled 'error' event
+ #               ^
+ # Error: spawn ENOENT
+ #     at errnoException (child_process.js:945:11)
+ #     at Process.ChildProcess._handle.onexit (child_process.js:736:
+ returns 8
+end
