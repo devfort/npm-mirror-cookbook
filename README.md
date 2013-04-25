@@ -36,8 +36,6 @@ Recipes
 
 The main entrypoint for this cookbook is the `default` recipe.
 
-When used with Vagrant, there's also a `vagrant` recipe to allow testing of the local npm mirror from inside the Vagrant VM.
-
 Usage
 =====
 
