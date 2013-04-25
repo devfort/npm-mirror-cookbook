@@ -12,11 +12,14 @@ Vagrant.configure("2") do |config|
 
   config.berkshelf.enabled = true
   config.vm.provision :chef_solo do |chef|
-    chef.json = {}
+    chef.json = {
+      'npm_mirror' => {
+        'user' => 'vagrant'
+      }
+    }
 
     chef.run_list = [
         "recipe[npm-mirror::default]",
-        "recipe[npm-mirror::vagrant]"
     ]
   end
 end

@@ -65,3 +65,10 @@ execute "Sync the registry-rewriter and search UI" do
  #     at Process.ChildProcess._handle.onexit (child_process.js:736:
  returns 8
 end
+
+template "/home/#{node.npm_mirror.user}/.npmrc" do
+  source "npmrc.erb"
+  owner node.npm_mirror.user
+  group node.npm_mirror.user
+  mode "0644"
+end
