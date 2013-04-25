@@ -13,7 +13,6 @@ execute 'Force couch to start cleanly' do
 end
 
 # HACK: Couch isn't ready yet, even though it's 'started'. Sigh.
-#       There's got to be a better way to do this. I wonder if @thommay has any ideas.
 execute "wait for couchdb" do
   command "sleep 5"
 end
