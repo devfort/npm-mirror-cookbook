@@ -26,15 +26,6 @@ execute "Create registry" do
   EOF
 end
 
-execute "Replicate npm's couchdb" do
-  command <<-EOF
-    curl --request POST --max-time 1 --silent --header "Content-Type:application/json" \
-        http://localhost:#{node.couch_db.config.httpd.port}/_replicate -d \
-        '{"source":"http://isaacs.iriscouch.com/registry/", "target":"registry"}'
-  EOF
-  returns 28
-end
-
 include_recipe "nodejs::npm"
 
 execute "Install couchapp and semver" do
@@ -66,9 +57,20 @@ execute "Sync the registry-rewriter and search UI" do
  returns 8
 end
 
+execute "Replicate npm's couchdb" do
+  command <<-EOF
+    curl --request POST --max-time 1 --silent --header "Content-Type:application/json" \
+        http://localhost:#{node.couch_db.config.httpd.port}/_replicate -d \
+        '{"source":"http://isaacs.iriscouch.com/registry/", "target":"registry"}'
+  EOF
+  returns 28
+end
+
 template "/home/#{node.npm_mirror.user}/.npmrc" do
   source "npmrc.erb"
   owner node.npm_mirror.user
   group node.npm_mirror.user
   mode "0644"
 end
+
+log "Started mirroring npm; check http://localhost:#{node.couch_db.config.httpd.port}/_utils/status.html to monitor mirroring progress."
