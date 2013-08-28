@@ -7,3 +7,4 @@ override['couch_db']['config']['httpd']['bind_address'] = "0.0.0.0"
 # TODO: Move these to a separate thing so we only use them when setting up a fort?
 override['couch_db']['config']['vhosts']['npm.fort'] = "/registry/_design/ui/_rewrite"
 override['couch_db']['config']['vhosts']['npm-registry.fort'] = "/registry/_design/scratch/_rewrite"
+override['npm']['version'] = '1.3.9'
