@@ -23,7 +23,7 @@ end
 
 include_recipe "npm"
 
-package "git"
+include_recipe "git"
 git "/srv/npmjs.org" do
   repository "https://github.com/isaacs/npmjs.org.git"
 end
