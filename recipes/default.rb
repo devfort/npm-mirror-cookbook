@@ -9,25 +9,27 @@ http_request "Create registry" do
   url "#{couch_url}/registry"
   not_if "curl --fail #{couch_url}/registry"
 end
+
 http_request "Replicate npmjs.org's couchdb" do
   # Delay until couch restarts, or this won't replicate
   action :nothing
-  subscribes :put, "service[couchdb]", :immediately
+  subscribes :put, "service[couchdb]"
   url "#{couch_url}/_replicator/npm-mirror"
+  # HACK: Force message to be a JSON string, otherwise it breaks?!
   message({
-    :source => "https://isaacs.ic.ht/registry",
+    :source => "http://isaacs.ic.ht/registry",
     :target => "registry",
-  })
-  not_if "curl --fail #{couch_url}/_replicator/npm-mirror"
+  }.to_json)
 end
 
-include_recipe "npm"
+log "Scheduled npm mirroring; check `#{couch_url}/_utils/status.html` to monitor."
 
 include_recipe "git"
 git "/srv/npmjs.org" do
   repository "https://github.com/isaacs/npmjs.org.git"
 end
 
+include_recipe "nodejs"
 %w{couchapp semver}.each { |pkg|
   npm_package pkg
   npm_package pkg do
@@ -43,5 +45,3 @@ execute "Sync the registry-rewriter and search UI" do
    couchapp push www/app.js #{couch_url}/registry
  EOF
 end
-
-log "Started mirroring npm; check #{couch_url}/_utils/status.html to monitor mirroring progress."
