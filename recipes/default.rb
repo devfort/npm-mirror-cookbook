@@ -20,6 +20,7 @@ http_request "Replicate npmjs.org's couchdb" do
     :source => "http://isaacs.ic.ht/registry",
     :target => "registry",
   }.to_json)
+  not_if "curl --fail #{couch_url}/_replicator/npm-mirror"
 end
 
 log "Scheduled npm mirroring; check `#{couch_url}/_utils/status.html` to monitor."
