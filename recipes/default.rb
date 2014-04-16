@@ -1,5 +1,5 @@
 # Build a clone of npmjs.org, per https://github.com/isaacs/npmjs.org
-include_recipe "couchdb"
+include_recipe "couchdb::#{node['couch_db']['install_method']}"
 
 couch_url = "http://localhost:#{node['couch_db']['config']['httpd']['port']}"
 
